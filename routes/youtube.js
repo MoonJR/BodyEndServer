@@ -92,7 +92,8 @@ exports.getVideo = function (req, res) {
                 if (err) {
                     res.json(flag.FLAG_ALREADY_REG_VIDEO_JSON);
                 } else {
-                    var sendData = flag.FLAG_SUCCESS_JSON.constructor();
+                    var sendData = (JSON.parse(JSON.stringify(flag.FLAG_SUCCESS_JSON)));
+                    console.log(sendData);
                     sendData.contents = result;
                     res.json(sendData);
                 }
