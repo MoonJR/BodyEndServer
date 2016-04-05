@@ -11,4 +11,9 @@ router.get('/insertVideo', youtube.insertVideo);
 router.get('/getVideo', youtube.getVideo)
 router.get('/deleteVideo', youtube.deleteVideo);
 
+router.get('/modifyCategory', youtube.modifyCategory);
+router.get('/insertCategory', youtube.insertCategory);
+router.get('/deleteCategory', youtube.deleteCategory);
+
+
 module.exports = router;

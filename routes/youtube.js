@@ -140,3 +140,89 @@ exports.deleteVideo = function (req, res) {
     });
 
 };
+
+exports.insertCategory = function (req, res) {
+
+    var id = Number(req.query.category_id);
+    var title = req.query.category_title;
+
+    if (isNaN(id)) {
+        res.json(flag.FLAG_NOT_AVAILABLE_CATEGORY_JSON);
+        return;
+    }
+
+    pool.getConnection(function (err, connection) {
+        if (err) {
+            console.log(err);
+            res.json(flag.FLAG_DB_CONNECTION_ERROR_JSON);
+        } else {
+            connection.query('INSERT INTO YOUTUBE_CATEGORY VALUES(?,?)', [id, title], function (err, result) {
+                if (err) {
+                    res.json(flag.FLAG_ALREADY_REG_CATEGORY_JSON);
+                } else {
+                    res.json(flag.FLAG_SUCCESS_JSON);
+                }
+            });
+        }
+        connection.release();
+    });
+
+};
+
+exports.modifyCategory = function (req, res) {
+
+    var id = Number(req.query.category_id);
+    var title = req.query.category_title;
+
+    if (isNaN(id)) {
+        res.json(flag.FLAG_NOT_EXIST_CATEGORY_JSON);
+        return;
+    }
+
+    pool.getConnection(function (err, connection) {
+        if (err) {
+            console.log(err);
+            res.json(flag.FLAG_DB_CONNECTION_ERROR_JSON);
+        } else {
+            connection.query('UPDATE YOUTUBE_CATEGORY SET VIDEO_CATEGORY_TITLE = ? WHERE VIDEO_CATEGORY_ID = ?', [title, id], function (err, result) {
+                if (err) {
+                    res.json(flag.FLAG_NOT_EXIST_CATEGORY_JSON);
+                } else {
+                    if (result.affectedRows > 0) {
+                        res.json(flag.FLAG_SUCCESS_JSON);
+                    } else {
+                        res.json(flag.FLAG_NOT_EXIST_CATEGORY_JSON);
+                    }
+                }
+            });
+        }
+        connection.release();
+    });
+
+};
+
+exports.deleteCategory = function (req, res) {
+
+    var id = req.query.category_id;
+
+    pool.getConnection(function (err, connection) {
+        if (err) {
+            console.log(err);
+            res.json(flag.FLAG_DB_CONNECTION_ERROR_JSON);
+        } else {
+            connection.query('DELETE FROM YOUTUBE_CATEGORY WHERE VIDEO_CATEGORY_ID = ?', [id], function (err, result) {
+                if (err) {
+                    res.json(flag.FLAG_ALREADY_EXIST_OTHER_TABLE_JSON);
+                } else {
+                    if (result.affectedRows > 0) {
+                        res.json(flag.FLAG_SUCCESS_JSON);
+                    } else {
+                        res.json(flag.FLAG_NOT_EXIST_CATEGORY_JSON);
+                    }
+                }
+            });
+        }
+        connection.release();
+    });
+
+};
