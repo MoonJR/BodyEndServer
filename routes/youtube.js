@@ -99,7 +99,7 @@ exports.getVideo = function (req, res) {
             console.log(err);
             res.json(flag.FLAG_DB_CONNECTION_ERROR_JSON);
         } else {
-            connection.query('SELECT YOUTUBE_LIST.video_id, YOUTUBE_LIST.video_title, YOUTUBE_LIST.video_duration, YOUTUBE_LIST.video_thumbs, YOUTUBE_LIST.video_view_count, YOUTUBE_CATEGORY.video_category_title, YOUTUBE_CATEGORY.video_category_id FROM YOUTUBE_LIST JOIN YOUTUBE_CATEGORY ON YOUTUBE_LIST.VIDEO_CATEGORY_ID = YOUTUBE_LIST.VIDEO_CATEGORY_ID ORDER BY YOUTUBE_LIST.VIDEO_CATEGORY_ID', [], function (err, result) {
+            connection.query('SELECT YOUTUBE_LIST.video_id, YOUTUBE_LIST.video_title, YOUTUBE_LIST.video_duration, YOUTUBE_LIST.video_thumbs, YOUTUBE_LIST.video_view_count, YOUTUBE_CATEGORY.video_category_title, YOUTUBE_CATEGORY.video_category_id FROM YOUTUBE_LIST JOIN YOUTUBE_CATEGORY ON YOUTUBE_LIST.VIDEO_CATEGORY_ID = YOUTUBE_CATEGORY.VIDEO_CATEGORY_ID ORDER BY YOUTUBE_LIST.VIDEO_CATEGORY_ID', [], function (err, result) {
                 if (err) {
                     res.json(flag.FLAG_ALREADY_REG_VIDEO_JSON);
                 } else {
