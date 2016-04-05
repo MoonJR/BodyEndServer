@@ -10,7 +10,7 @@ var youtubeRequestUrl = 'https://www.googleapis.com/youtube/v3/videos';
 exports.insertVideo = function (req, res) {
 
     var id = req.query.id;
-    var requestUrl = youtubeRequestUrl + '?part=id%2Csnippet%2CcontentDetails&id=' + id + '&key=AIzaSyDFJfd0OTAkc35K4kqb5et4E0N7YN1C_og';
+    var requestUrl = youtubeRequestUrl + '?part=id%2Csnippet%2CcontentDetails%2Cstatistics&id=' + id + '&key=AIzaSyDFJfd0OTAkc35K4kqb5et4E0N7YN1C_og';
 
     https.get(requestUrl, function (result) {
         var body = '';
@@ -52,16 +52,27 @@ exports.insertVideo = function (req, res) {
                 var duration = hour + min + sec;
                 var title = item.snippet.title;
                 var thumbs = item.snippet.thumbnails.medium.url;
-                var category = req.query.category;
+                var viewCount = item.statistics.viewCount;
+                var category = Number(req.query.category);
+
+                if (isNaN(category)) {
+                    res.json(flag.FLAG_NOT_EXIST_CATEGORY_JSON);
+                    return;
+                }
 
                 pool.getConnection(function (err, connection) {
                     if (err) {
                         console.log(err);
                         res.json(flag.FLAG_DB_CONNECTION_ERROR_JSON);
                     } else {
-                        connection.query('INSERT INTO YOUTUBE_LIST VALUES(?,?,?,?,?)', [id, title, duration, thumbs, category], function (err, result) {
+                        connection.query('INSERT INTO YOUTUBE_LIST VALUES(?,?,?,?,?,?)', [id, title, duration, thumbs, viewCount, category], function (err, result) {
                             if (err) {
-                                res.json(flag.FLAG_ALREADY_REG_VIDEO_JSON);
+                                console.log(err);
+                                if (err.errno == 1452) {
+                                    res.json(flag.FLAG_NOT_EXIST_CATEGORY_JSON);
+                                } else {
+                                    res.json(flag.FLAG_ALREADY_REG_VIDEO_JSON);
+                                }
                             } else {
                                 res.json(flag.FLAG_SUCCESS_JSON);
                             }
@@ -88,7 +99,7 @@ exports.getVideo = function (req, res) {
             console.log(err);
             res.json(flag.FLAG_DB_CONNECTION_ERROR_JSON);
         } else {
-            connection.query('SELECT video_id, video_title, video_duration, video_thumbs, video_category FROM YOUTUBE_LIST', [], function (err, result) {
+            connection.query('SELECT YOUTUBE_LIST.video_id, YOUTUBE_LIST.video_title, YOUTUBE_LIST.video_duration, YOUTUBE_LIST.video_thumbs, YOUTUBE_LIST.video_view_count, YOUTUBE_CATEGORY.video_category_title, YOUTUBE_CATEGORY.video_category_id FROM YOUTUBE_LIST JOIN YOUTUBE_CATEGORY ON YOUTUBE_LIST.VIDEO_CATEGORY_ID = YOUTUBE_LIST.VIDEO_CATEGORY_ID ORDER BY YOUTUBE_LIST.VIDEO_CATEGORY_ID', [], function (err, result) {
                 if (err) {
                     res.json(flag.FLAG_ALREADY_REG_VIDEO_JSON);
                 } else {
