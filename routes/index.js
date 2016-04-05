@@ -13,6 +13,7 @@ router.get('/deleteVideo', youtube.deleteVideo);
 
 router.get('/modifyCategory', youtube.modifyCategory);
 router.get('/insertCategory', youtube.insertCategory);
+router.get('/getCategory', youtube.getCategory);
 router.get('/deleteCategory', youtube.deleteCategory);
 
 

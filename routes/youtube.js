@@ -169,6 +169,28 @@ exports.insertCategory = function (req, res) {
 
 };
 
+exports.getCategory = function (req, res) {
+    pool.getConnection(function (err, connection) {
+        if (err) {
+            console.log(err);
+            res.json(flag.FLAG_DB_CONNECTION_ERROR_JSON);
+        } else {
+            connection.query('SELECT video_category_title, video_category_id FROM YOUTUBE_CATEGORY ORDER BY VIDEO_CATEGORY_ID', [], function (err, result) {
+                if (err) {
+                    res.json(flag.FLAG_UNKNOWN_ERROR_JSON);
+                } else {
+                    var sendData = (JSON.parse(JSON.stringify(flag.FLAG_SUCCESS_JSON)));
+                    console.log(sendData);
+                    sendData.contents = result;
+                    res.json(sendData);
+                }
+            });
+        }
+        connection.release();
+    });
+
+};
+
 exports.modifyCategory = function (req, res) {
 
     var id = Number(req.query.category_id);
