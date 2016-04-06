@@ -94,12 +94,19 @@ exports.insertVideo = function (req, res) {
 };
 
 exports.getVideo = function (req, res) {
+    var category = Number(req.query.category);
+
+    if (isNaN(category)) {
+        res.json(flag.FLAG_NOT_EXIST_CATEGORY_JSON);
+        return;
+    }
+
     pool.getConnection(function (err, connection) {
         if (err) {
             console.log(err);
             res.json(flag.FLAG_DB_CONNECTION_ERROR_JSON);
         } else {
-            connection.query('SELECT YOUTUBE_LIST.video_id, YOUTUBE_LIST.video_title, YOUTUBE_LIST.video_duration, YOUTUBE_LIST.video_thumbs, YOUTUBE_LIST.video_view_count, YOUTUBE_CATEGORY.video_category_title, YOUTUBE_CATEGORY.video_category_id FROM YOUTUBE_LIST JOIN YOUTUBE_CATEGORY ON YOUTUBE_LIST.VIDEO_CATEGORY_ID = YOUTUBE_CATEGORY.VIDEO_CATEGORY_ID ORDER BY YOUTUBE_LIST.VIDEO_CATEGORY_ID', [], function (err, result) {
+            connection.query('SELECT YOUTUBE_LIST.video_id, YOUTUBE_LIST.video_title, YOUTUBE_LIST.video_duration, YOUTUBE_LIST.video_thumbs, YOUTUBE_LIST.video_view_count, YOUTUBE_CATEGORY.video_category_title, YOUTUBE_CATEGORY.video_category_id FROM YOUTUBE_LIST JOIN YOUTUBE_CATEGORY ON YOUTUBE_LIST.VIDEO_CATEGORY_ID = YOUTUBE_CATEGORY.VIDEO_CATEGORY_ID WHERE YOUTUBE_CATEGORY.VIDEO_CATEGORY_ID = ? ORDER BY YOUTUBE_LIST.VIDEO_CATEGORY_ID', [category], function (err, result) {
                 if (err) {
                     res.json(flag.FLAG_ALREADY_REG_VIDEO_JSON);
                 } else {
@@ -175,8 +182,9 @@ exports.getCategory = function (req, res) {
             console.log(err);
             res.json(flag.FLAG_DB_CONNECTION_ERROR_JSON);
         } else {
-            connection.query('SELECT video_category_title, video_category_id FROM YOUTUBE_CATEGORY ORDER BY VIDEO_CATEGORY_ID', [], function (err, result) {
+            connection.query('SELECT video_category_title, video_category_id, (SELECT COUNT(*) FROM YOUTUBE_LIST WHERE YOUTUBE_LIST.VIDEO_CATEGORY_ID = YOUTUBE_CATEGORY.VIDEO_CATEGORY_ID) AS video_count FROM YOUTUBE_CATEGORY ORDER BY VIDEO_CATEGORY_ID', [], function (err, result) {
                 if (err) {
+                    console.log(err);
                     res.json(flag.FLAG_UNKNOWN_ERROR_JSON);
                 } else {
                     var sendData = (JSON.parse(JSON.stringify(flag.FLAG_SUCCESS_JSON)));
