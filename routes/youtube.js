@@ -9,7 +9,7 @@ var youtubeRequestUrl = 'https://www.googleapis.com/youtube/v3/videos';
 
 exports.insertVideo = function (req, res) {
 
-    var id = req.query.id;
+    var id = req.query.id.trim();
     var requestUrl = youtubeRequestUrl + '?part=id%2Csnippet%2CcontentDetails%2Cstatistics&id=' + id + '&key=AIzaSyDFJfd0OTAkc35K4kqb5et4E0N7YN1C_og';
 
     https.get(requestUrl, function (result) {
