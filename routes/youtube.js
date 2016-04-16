@@ -6,11 +6,12 @@ var pool = require('../libs/DBManager').mysqlPool;
 var flag = require('../libs/ErrorFlag');
 var https = require('https');
 var youtubeRequestUrl = 'https://www.googleapis.com/youtube/v3/videos';
+var youtubeApiKey = 'AIzaSyAxD9HWnneuavrsDiy61OcQraZbSzX8PbI';
 
 exports.insertVideo = function (req, res) {
 
     var id = req.query.id.trim();
-    var requestUrl = youtubeRequestUrl + '?part=id%2Csnippet%2CcontentDetails%2Cstatistics&id=' + id + '&key=AIzaSyDFJfd0OTAkc35K4kqb5et4E0N7YN1C_og';
+    var requestUrl = youtubeRequestUrl + '?part=id%2Csnippet%2CcontentDetails%2Cstatistics&id=' + id + '&key=' + youtubeApiKey;
 
     https.get(requestUrl, function (result) {
         var body = '';
@@ -254,5 +255,75 @@ exports.deleteCategory = function (req, res) {
         }
         connection.release();
     });
+
+};
+
+exports.getVideoInfo = function (req, res) {
+
+    var id = req.query.id.trim();
+    var requestUrl = youtubeRequestUrl + '?part=id%2Csnippet%2CcontentDetails%2Cstatistics&id=' + id + '&key=' + youtubeApiKey;
+
+    https.get(requestUrl, function (result) {
+        var body = '';
+        result.on('data', function (chunk) {
+            body += chunk;
+        });
+        result.on('end', function () {
+            try {
+                var response = JSON.parse(body);
+                console.log(response);
+                if (response.items.length == 0) {
+                    res.json(flag.FLAG_NOT_EXIST_VIDEO_JSON);
+                    return;
+                }
+
+                var item = response.items[0];
+
+                var durationTmp = item.contentDetails.duration.replace('PT', '');
+                var hour = 0;
+                var min = 0;
+                var sec = 0;
+
+                if (durationTmp.indexOf("H") > 0) {
+                    hour = durationTmp.substr(0, durationTmp.indexOf('H'));
+                    durationTmp = durationTmp.substr(durationTmp.indexOf('H') + 1, durationTmp.length);
+                }
+                if (durationTmp.indexOf("M") > 0) {
+                    min = durationTmp.substr(0, durationTmp.indexOf('M'));
+                    durationTmp = durationTmp.substr(durationTmp.indexOf('M') + 1, durationTmp.length);
+                }
+                if (durationTmp.indexOf("S") > 0) {
+                    sec = durationTmp.substr(0, durationTmp.indexOf('S'));
+                }
+
+                hour = Number(hour) * 60 * 60;
+                min = Number(min) * 60;
+                sec = Number(sec);
+
+                var duration = hour + min + sec;
+                var title = item.snippet.title;
+                var thumbs = item.snippet.thumbnails.medium.url;
+                var viewCount = item.statistics.viewCount;
+
+                var sendData = (JSON.parse(JSON.stringify(flag.FLAG_SUCCESS_JSON)));
+                sendData.contents = {
+                    video_id: id,
+                    video_title: title,
+                    video_duration: duration,
+                    video_thumbs: thumbs,
+                    video_view_count: viewCount
+                };
+
+                res.json(sendData);
+
+            } catch (e) {
+                console.log(e);
+                res.json(flag.FLAG_UNKNOWN_ERROR_JSON);
+            }
+
+
+        });
+    });
+
 
 };
