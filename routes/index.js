@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var youtube = require('./youtube');
+var dataSet = require('./dataSet');
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -16,6 +17,9 @@ router.get('/insertCategory', youtube.insertCategory);
 router.get('/getCategory', youtube.getCategory);
 router.get('/deleteCategory', youtube.deleteCategory);
 router.get('/getVideoInfo', youtube.getVideoInfo);
+
+router.get('/getDataSet', dataSet.getDataSet);
+router.get('/setDataSet', dataSet.setDataSet);
 
 
 module.exports = router;

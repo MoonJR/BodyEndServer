@@ -10,6 +10,9 @@ const FLAG_ALREADY_REG_CATEGORY_CODE = 3000;
 const FLAG_NOT_EXIST_CATEGORY_CODE = 3001;
 const FLAG_NOT_AVAILABLE_CATEGORY_CODE = 3003;
 const FLAG_ALREADY_EXIST_OTHER_TABLE_CODE = 3004;
+
+const FLAG_LACK_VARIABLE_CODE = 4000;
+
 const FLAG_SUCCESS_CODE = 0;
 
 const FLAG_UNKNOWN_ERROR_MSG = '예상치 않은 오류 발생';
@@ -20,6 +23,7 @@ const FLAG_NOT_EXIST_VIDEO_MSG = '존재하지 않는 영상 입니다.';
 const FLAG_NOT_EXIST_CATEGORY_MSG = '존재하지 않는 카테고리 입니다.';
 const FLAG_NOT_AVAILABLE_CATEGORY_MSG = '사용 불가능한 카테고리 아이디 입니다.';
 const FLAG_ALREADY_EXIST_OTHER_TABLE_MSG = '다른 테이블에서 사용중인 아이디 입니다.';
+const FLAG_LACK_VARIABLE_MSG = '매개변수가 부족합니다.';
 
 
 const FLAG_SUCCESS_MSG = '성공';
@@ -61,6 +65,10 @@ exports.FLAG_ALREADY_EXIST_OTHER_TABLE_JSON = {
 
 };
 
+exports.FLAG_LACK_VARIABLE_JSON = {
+    code: FLAG_LACK_VARIABLE_CODE,
+    msg: FLAG_LACK_VARIABLE_MSG
+};
 
 exports.FLAG_SUCCESS_JSON = {
     code: FLAG_SUCCESS_CODE,
