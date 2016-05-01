@@ -10,7 +10,7 @@ exports.getDataSet = function (req, res) {
             console.log(err);
             res.json(flag.FLAG_DB_CONNECTION_ERROR_JSON);
         } else {
-            connection.query('SELECT drawer_color, drawer_text FROM BODY_END_DATA_SET', [], function (err, result) {
+            connection.query('SELECT drawer_background_color, drawer_text, drawer_text_color FROM BODY_END_DATA_SET', [], function (err, result) {
                 if (err) {
                     console.log(err);
                     res.json(flag.FLAG_UNKNOWN_ERROR_JSON);
@@ -28,10 +28,11 @@ exports.getDataSet = function (req, res) {
 };
 
 exports.setDataSet = function (req, res) {
-    var drawerColor = req.query.drawer_color;
+    var drawerBackgroundColor = req.query.drawer_background_color;
     var drawerText = req.query.drawer_text;
+    var drawerTextColor = req.query.drawer_text_color;
 
-    if (typeof drawerColor == 'undefined' || typeof drawerText == 'undefined') {
+    if (typeof drawerBackgroundColor == 'undefined' || typeof drawerText == 'undefined' || typeof drawerTextColor == 'undefined') {
         res.json(flag.FLAG_LACK_VARIABLE_JSON);
         return;
     }
@@ -41,7 +42,7 @@ exports.setDataSet = function (req, res) {
             console.log(err);
             res.json(flag.FLAG_DB_CONNECTION_ERROR_JSON);
         } else {
-            connection.query('UPDATE BODY_END_DATA_SET SET DRAWER_COLOR=?, DRAWER_TEXT=?', [drawerColor, drawerText], function (err, result) {
+            connection.query('UPDATE BODY_END_DATA_SET SET DRAWER_BACKGROUND_COLOR=?, DRAWER_TEXT=?, DRAWER_TEXT_COLOR=?', [drawerBackgroundColor, drawerText, drawerTextColor], function (err, result) {
                 if (err) {
                     console.log(err);
                     res.json(flag.FLAG_UNKNOWN_ERROR_JSON);
